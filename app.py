@@ -2,17 +2,14 @@ import os
 import json
 import logging
 from flask import Flask, render_template, request, jsonify, abort
+from openai import OpenAI
 
-# Set up logging
+
 logging.basicConfig(level=logging.DEBUG)
 
-# Create the app
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET")
-
-# the newest OpenAI model is "gpt-4o" which was released May 13, 2024.
-# do not change this unless explicitly requested by the user
-from openai import OpenAI
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 openai = OpenAI(api_key=OPENAI_API_KEY)
@@ -28,8 +25,6 @@ def password_protected_route(attempt):
         return "Access denied", 403
     return render_template("index.html")
 
-    """Render the main game page"""
-    return render_template('index.html')
 
 @app.route('/analyze_gameplay', methods=['POST'])
 def analyze_gameplay():
@@ -42,11 +37,10 @@ def analyze_gameplay():
 
 
     try:
-        # Get gameplay metrics from the request
+    
         gameplay_data = request.json
         logging.debug(f"Received gameplay data: {gameplay_data}")
         
-        # Process the gameplay metrics
         metrics = gameplay_data.get('metrics', {})
         
         # Calculate a risk score manually first
