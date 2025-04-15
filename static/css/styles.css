@@ -1,0 +1,71 @@
+/* Game Canvas Styling */
+#game-container {
+    position: relative;
+    width: 100%;
+    background-color: var(--bs-dark);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#game-canvas {
+    display: block;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #111218;
+}
+
+#game-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+    z-index: 10;
+}
+
+/* Risk Meter Styling */
+.risk-meter-container {
+    padding: 10px 0;
+}
+
+.risk-meter {
+    height: 24px;
+    background-color: var(--bs-dark);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.risk-meter-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+    border-radius: 12px;
+    transition: width 0.8s ease-in-out;
+}
+
+/* Game UI Elements */
+.game-stats {
+    font-size: 1.1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    #game-canvas {
+        height: 300px;
+    }
+}
+
+@media (max-width: 576px) {
+    #game-canvas {
+        height: 250px;
+    }
+    
+    .game-stats {
+        font-size: 0.9rem;
+    }
+}
