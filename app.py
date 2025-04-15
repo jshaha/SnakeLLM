@@ -22,11 +22,11 @@ PASSWORD = os.getenv("PASSWORD")
 def ping():
     return jsonify({"message": "pong", "status": "ok"})
 
-@app.route('/')
-def index():
-    token = request.headers.get("X-ACCESS-TOKEN")
-    if token != PASSWORD:
-        abort(403)
+@app.route("/<path:attempt>")
+def password_protected_route(attempt):
+    if attempt != PASSWORD:
+        return "Access denied", 403
+    return render_template("index.html")
 
     """Render the main game page"""
     return render_template('index.html')
