@@ -17,6 +17,11 @@ from openai import OpenAI
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 openai = OpenAI(api_key=OPENAI_API_KEY)
 
+
+@app.route("/ping", methods=["GET"])
+def ping():
+    return jsonify({"message": "pong", "status": "ok"})
+
 @app.route('/')
 def index():
     """Render the main game page"""
