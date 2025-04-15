@@ -1,7 +1,7 @@
 import os
 import json
 import logging
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, abort
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -16,7 +16,7 @@ from openai import OpenAI
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 openai = OpenAI(api_key=OPENAI_API_KEY)
-
+PASSWORD = os.getenv("PASSWORD")
 
 @app.route("/ping", methods=["GET"])
 def ping():
@@ -24,6 +24,10 @@ def ping():
 
 @app.route('/')
 def index():
+    token = request.headers.get("X-ACCESS-TOKEN")
+    if token != PASSWORD:
+        abort(403)
+
     """Render the main game page"""
     return render_template('index.html')
 
@@ -32,6 +36,11 @@ def analyze_gameplay():
     """
     Process gameplay metrics and generate a risk profile using OpenAI
     """
+    token = request.headers.get("X-ACCESS-TOKEN")
+    if token != PASSWORD:
+        abort(403)
+
+
     try:
         # Get gameplay metrics from the request
         gameplay_data = request.json

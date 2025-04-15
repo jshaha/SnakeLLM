@@ -4,6 +4,8 @@
  */
 document.addEventListener('DOMContentLoaded', () => {
     // Canvas and context setup
+    const urlPath = window.location.pathname.replace("/", "");
+    localStorage.setItem("accessKey", urlPath);
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
     
@@ -481,7 +483,8 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('/analyze_gameplay', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                "X-ACCESS-TOKEN": localStorage.getItem("accessKey")
             },
             body: JSON.stringify({ metrics })
         })
