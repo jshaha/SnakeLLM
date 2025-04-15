@@ -13,6 +13,7 @@
     max-width: 600px;
     margin: 0 auto;
     background-color: #111218;
+    position: relative;
     z-index: 5;
 }
 

@@ -331,8 +331,11 @@ document.addEventListener('DOMContentLoaded', () => {
         initGame();
         gameActive = true;
         
-        // Hide overlay completely
+        // Remove the overlay element completely
         gameOverlay.style.display = 'none';
+        gameOverlay.style.visibility = 'hidden';
+        gameOverlay.style.opacity = '0';
+        gameOverlay.style.zIndex = '-1';
         
         // Enable restart button
         restartButton.disabled = false;
@@ -348,6 +351,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Draw the game immediately to make board visible
         draw();
+        
+        // Force a redraw after a small delay to ensure overlay is gone
+        setTimeout(() => {
+            draw();
+            console.log("Game started - overlay should be hidden");
+        }, 50);
     }
     
     // End the game
@@ -362,6 +371,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const finalMetrics = calculateFinalMetrics();
         
         // Show game over overlay with custom message
+        gameOverlay.style.visibility = 'visible';
+        gameOverlay.style.opacity = '1';
+        gameOverlay.style.zIndex = '10';
         gameOverlay.style.display = 'flex';
         gameOverlay.innerHTML = `
             <h2>Game Over</h2>
