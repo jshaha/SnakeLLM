@@ -313,6 +313,43 @@ document.addEventListener('DOMContentLoaded', () => {
         metricRisky.textContent = gameMetrics.riskyBodyMovements;
         metricMisses.textContent = gameMetrics.nearMisses;
         metricDecision.textContent = `${avgDecisionTime}ms`;
+        
+        // Calculate real-time risk score (0-100)
+        const riskScore = calculateRealTimeRiskScore();
+        
+        // Update risk meter in real-time
+        document.getElementById('risk-meter-fill').style.width = `${riskScore}%`;
+    }
+    
+    // Calculate a real-time risk score based on current metrics
+    function calculateRealTimeRiskScore() {
+        if (gameMetrics.totalFrames < 10) return 0; // Not enough data yet
+        
+        const wallProximityPercentage = gameMetrics.totalFrames > 0 
+            ? Math.round((gameMetrics.wallProximityFrames / gameMetrics.totalFrames) * 100) 
+            : 0;
+            
+        const avgDecisionTime = gameMetrics.decisionTimes.length > 0
+            ? Math.round(gameMetrics.decisionTimes.reduce((sum, time) => sum + time, 0) / gameMetrics.decisionTimes.length)
+            : 0;
+        
+        // Scoring factors (weights can be adjusted)
+        const turnFactor = Math.min(100, (gameMetrics.unnecessaryTurns / (gameMetrics.totalFrames / 10)) * 30);
+        const wallFactor = wallProximityPercentage * 0.7;
+        const riskyFactor = Math.min(100, (gameMetrics.riskyBodyMovements / (gameMetrics.totalFrames / 5)) * 25);
+        const missFactor = Math.min(100, gameMetrics.nearMisses * 10);
+        const timeFactor = Math.max(0, 100 - (avgDecisionTime / 20)); // Faster decisions might be riskier
+        
+        // Combined risk score (weighted average)
+        const riskScore = Math.round(
+            (turnFactor * 0.2) + 
+            (wallFactor * 0.25) + 
+            (riskyFactor * 0.3) + 
+            (missFactor * 0.15) + 
+            (timeFactor * 0.1)
+        );
+        
+        return Math.min(100, Math.max(0, riskScore));
     }
     
     // Game loop
@@ -457,6 +494,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Keyboard controls
         document.addEventListener('keydown', event => {
             if (!gameActive) return;
+            
+            // Prevent arrow keys from scrolling the page
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(event.key)) {
+                event.preventDefault();
+            }
             
             // Record time for decision time metric
             const currentTime = Date.now();

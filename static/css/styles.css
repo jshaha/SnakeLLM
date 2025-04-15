@@ -58,7 +58,7 @@
     width: 0%;
     background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
     border-radius: 12px;
-    transition: width 0.8s ease-in-out;
+    transition: width 0.3s ease-out;
 }
 
 /* Game UI Elements */
