@@ -333,20 +333,36 @@ document.addEventListener('DOMContentLoaded', () => {
             ? Math.round(gameMetrics.decisionTimes.reduce((sum, time) => sum + time, 0) / gameMetrics.decisionTimes.length)
             : 0;
         
-        // Scoring factors (weights can be adjusted)
-        const turnFactor = Math.min(100, (gameMetrics.unnecessaryTurns / (gameMetrics.totalFrames / 10)) * 30);
-        const wallFactor = wallProximityPercentage * 0.7;
-        const riskyFactor = Math.min(100, (gameMetrics.riskyBodyMovements / (gameMetrics.totalFrames / 5)) * 25);
-        const missFactor = Math.min(100, gameMetrics.nearMisses * 10);
-        const timeFactor = Math.max(0, 100 - (avgDecisionTime / 20)); // Faster decisions might be riskier
+        // Calculate normalized metrics
+        const gameDuration = (Date.now() - gameStartTime) / 1000;
+        const turnsPerMinute = gameDuration > 0 ? (gameMetrics.unnecessaryTurns / gameDuration) * 60 : 0;
+        const movementsPerSecond = gameDuration > 0 ? gameMetrics.riskyBodyMovements / gameDuration : 0;
         
-        // Combined risk score (weighted average)
+        // Scoring factors (matching backend algorithm)
+        const turnFactor = Math.min(100, turnsPerMinute * 2);
+        const wallFactor = Math.min(100, wallProximityPercentage * 1.2);
+        const riskyFactor = Math.min(100, movementsPerSecond * 10);
+        const missFactor = Math.min(100, gameMetrics.nearMisses * 5);
+        
+        // Decision time factor
+        let decisionFactor = 0;
+        if (avgDecisionTime > 0) {
+            if (avgDecisionTime < 250) {
+                decisionFactor = 70; // Very fast decisions might be impulsive
+            } else if (avgDecisionTime > 1000) {
+                decisionFactor = 60; // Very slow decisions could be risky
+            } else {
+                decisionFactor = 30; // Moderate decision time
+            }
+        }
+        
+        // Combined risk score with same weights as backend
         const riskScore = Math.round(
             (turnFactor * 0.2) + 
             (wallFactor * 0.25) + 
             (riskyFactor * 0.3) + 
             (missFactor * 0.15) + 
-            (timeFactor * 0.1)
+            (decisionFactor * 0.1)
         );
         
         return Math.min(100, Math.max(0, riskScore));
@@ -437,6 +453,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const avgDecisionTime = gameMetrics.decisionTimes.length > 0
             ? Math.round(gameMetrics.decisionTimes.reduce((sum, time) => sum + time, 0) / gameMetrics.decisionTimes.length)
             : 0;
+            
+        // Calculate risk score for display in the meter
+        const riskScore = calculateRealTimeRiskScore();
+        
+        // Update risk meter one last time
+        document.getElementById('risk-meter-fill').style.width = `${riskScore}%`;
             
         return {
             score,

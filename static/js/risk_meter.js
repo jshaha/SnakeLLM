@@ -22,9 +22,9 @@ function displayRiskProfile(profileData) {
     
     // Determine color class based on risk profile
     let colorClass = '';
-    if (riskScore < 33) {
+    if (profileData.riskProfile === "Cautious") {
         colorClass = 'text-success';
-    } else if (riskScore < 66) {
+    } else if (profileData.riskProfile === "Average") {
         colorClass = 'text-warning';
     } else {
         colorClass = 'text-danger';
