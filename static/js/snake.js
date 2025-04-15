@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initGame();
         gameActive = true;
         
-        // Hide overlay
+        // Hide overlay completely
         gameOverlay.style.display = 'none';
         
         // Enable restart button
@@ -345,6 +345,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('risk-profile-content').classList.remove('d-none');
         document.getElementById('risk-loading').classList.add('d-none');
         document.getElementById('risk-meter-fill').style.width = '0%';
+        
+        // Draw the game immediately to make board visible
+        draw();
     }
     
     // End the game
